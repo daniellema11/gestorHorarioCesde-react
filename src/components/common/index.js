@@ -1,0 +1,7 @@
+export { default as Header } from './Header'
+export { default as HeaderAdmin } from './HeaderAdmin'
+export { default as HeaderProfesor } from './HeaderProfesor'
+export { default as Footer } from './Footer'
+export { default as Modal } from './Modal'
+export { default as Calendar } from './Calendar'
+export { default as DaySelector } from './DaySelector'

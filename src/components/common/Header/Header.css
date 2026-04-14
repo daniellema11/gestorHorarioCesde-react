@@ -1,0 +1,43 @@
+.header {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__logo {
+  height: 40px;
+  width: auto;
+}
+
+.header__nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.header__nav a {
+  color: var(--text-white);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--transition-normal);
+}
+
+.header__nav a:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 992px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .header__nav {
+    gap: 1rem;
+  }
+
+  .header__nav a {
+    font-size: 14px;
+  }
+}

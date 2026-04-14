@@ -1,0 +1,150 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: var(--bg-tertiary);
+}
+
+.admin-dashboard__main {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+.admin-dashboard__form,
+.admin-dashboard__professors {
+  width: 22%;
+  background: var(--bg-primary);
+  padding: 15px;
+  border-radius: var(--border-radius-lg);
+}
+
+.admin-dashboard__calendar {
+  flex: 1;
+}
+
+.btn-titulo {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+}
+
+.admin-dashboard__form form label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-dashboard__form input,
+.admin-dashboard__form select {
+  width: 100%;
+  padding: 5px;
+  margin-top: 3px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius-sm);
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.input-with-icon input {
+  flex: 1;
+}
+
+.input-with-icon select {
+  flex: 1;
+}
+
+.input-with-icon button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--primary-color);
+  font-size: 18px;
+}
+
+.btn-agregar {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.btn-agregar:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Profesores */
+.prof-header {
+  background-color: var(--secondary-color);
+  color: var(--text-white);
+  font-weight: bold;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.prof-header button {
+  background: none;
+  border: none;
+  color: var(--text-white);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.prof-header button:hover {
+  color: var(--primary-color);
+}
+
+.prof-list {
+  background-color: var(--bg-tertiary);
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+}
+
+.prof-item {
+  background: var(--bg-primary);
+  padding: 8px 10px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .admin-dashboard__main {
+    flex-wrap: wrap;
+  }
+  
+  .admin-dashboard__form,
+  .admin-dashboard__professors {
+    width: 100%;
+  }
+  
+  .admin-dashboard__calendar {
+    width: 100%;
+  }
+}

@@ -1,0 +1,23 @@
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page__main {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.home-page__slider {
+  position: relative;
+  max-width: 100%;
+}
+
+.home-page__slider img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

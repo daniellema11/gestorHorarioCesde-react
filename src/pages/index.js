@@ -1,0 +1,8 @@
+export { default as Home } from './Home'
+export { default as Login } from './Login'
+export { default as AdminDashboard } from './AdminDashboard'
+export { default as ProfesorDashboard } from './ProfesorDashboard'
+export { default as Soporte } from './Soporte'
+export { default as RecuperarContrasena } from './RecuperarContrasena'
+export { default as Notificaciones } from './Notificaciones'
+export { default as Chatbot } from './Chatbot'

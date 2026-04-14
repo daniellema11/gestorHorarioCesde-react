@@ -1,0 +1,40 @@
+:root {
+  /* Colores principales */
+  --primary-color: #E91E75;
+  --primary-dark: #d81669;
+  --primary-light: #f8d2e4;
+  
+  /* Colores secundarios */
+  --secondary-color: #433F3F;
+  --secondary-light: #666;
+  
+  /* Colores de fondo */
+  --bg-primary: #fff;
+  --bg-secondary: #f2f2f2;
+  --bg-tertiary: #EBEBEB;
+  
+  /* Colores de texto */
+  --text-primary: #11182B;
+  --text-secondary: #333;
+  --text-light: #888;
+  --text-white: #fff;
+  
+  /* Colores de estado */
+  --success-color: green;
+  --error-color: red;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+  
+  /* Bordes */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
