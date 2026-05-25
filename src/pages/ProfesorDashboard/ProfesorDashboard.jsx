@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HeaderProfesor, Calendar, Modal, DaySelector } from '../../components'
-import { addHorarioProfesor, getHorariosProfesor, estaAutenticado, obtenerUsuario } from '../../services'
+import { addHorarioProfesor, addNotificacionProfesor, getHorariosProfesor, estaAutenticado, obtenerUsuario } from '../../services'
 import Swal from 'sweetalert2'
 import './ProfesorDashboard.css'
 
@@ -69,29 +69,73 @@ const ProfesorDashboard = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const validateHorario = () => {
+    const { materia, fechaInicio, horaInicio, horaFin, instituto, fechaFin } = formData
+
+    if (!materia || !fechaInicio || !horaInicio || !horaFin || !instituto || !fechaFin || selectedDays.length === 0) {
+      Swal.fire('Error', 'Por favor completa todos los campos del horario.', 'error')
+      return false
+    }
+
+    if (fechaFin < fechaInicio) {
+      Swal.fire('Error', 'La fecha fin debe ser igual o posterior a la fecha inicio.', 'error')
+      return false
+    }
+
+    if (horaFin <= horaInicio) {
+      Swal.fire('Error', 'La hora fin debe ser posterior a la hora inicio.', 'error')
+      return false
+    }
+
+    const horarioDuplicado = horarios.some((h) =>
+      h.materia === materia &&
+      h.fechaInicio === fechaInicio &&
+      h.horaInicio === horaInicio &&
+      h.horaFin === horaFin &&
+      h.instituto === instituto
+    )
+
+    if (horarioDuplicado) {
+      Swal.fire('Error', 'Ya existe un horario igual registrado.', 'error')
+      return false
+    }
+
+    return true
+  }
+
   const handleDateClick = (date) => {
     setShowModal(true)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
+
+    if (!validateHorario()) {
+      return
+    }
+
+    const usuario = obtenerUsuario()
     const horario = {
       ...formData,
+      profesor: usuario?.nombre || 'Profesor',
       recurrencia: selectedDays
     }
-    
+
     addHorarioProfesor(horario)
-    
+    addNotificacionProfesor({
+      titulo: `Nuevo horario asignado: ${formData.materia}`,
+      mensaje: `${formData.instituto} - ${formData.fechaInicio} de ${formData.horaInicio} a ${formData.horaFin}`
+    })
+
     // Recargar lista de horarios
     setHorarios(getHorariosProfesor())
-    
+
     Swal.fire({
       title: 'Éxito',
       text: 'Horario guardado correctamente',
       icon: 'success'
     })
-    
+
     resetForm()
     setShowModal(false)
   }
@@ -130,6 +174,8 @@ const ProfesorDashboard = () => {
     setSelectedDays([])
   }
 
+  const eventosProximos = [...horarios].sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
+
   return (
     <div className="profesor-dashboard">
       <HeaderProfesor />
@@ -137,30 +183,26 @@ const ProfesorDashboard = () => {
       <main className="profesor-dashboard__main">
         {/* Calendario */}
         <section className="profesor-dashboard__calendar">
-          <Calendar onDateClick={handleDateClick} />
+          <Calendar onDateClick={handleDateClick} events={horarios} />
         </section>
 
         {/* Barra lateral de eventos */}
         <aside className="profesor-dashboard__sidebar">
           <h3>Próximos Eventos</h3>
-          
-          <div className="event-card">
-            <strong>Lógica de programación</strong>
-            <small>Aula 503 - 10:30 am</small>
-            <span className="event-date">15 mayo</span>
-          </div>
-          
-          <div className="event-card">
-            <strong>Programación Web</strong>
-            <small>Aula 501 - 2:00 pm</small>
-            <span className="event-date">16 mayo</span>
-          </div>
-          
-          <div className="event-card">
-            <strong>Metodología</strong>
-            <small>Aula 502 - 4:00 pm</small>
-            <span className="event-date">17 mayo</span>
-          </div>
+          {eventosProximos.length ? (
+            eventosProximos.map((evento) => (
+              <div className="event-card" key={evento.id}>
+                <strong>{evento.materia || 'Sin materia'}</strong>
+                <small>{evento.instituto} - {evento.horaInicio} a {evento.horaFin}</small>
+                <span className="event-date">{new Date(evento.fechaInicio).toLocaleDateString('es-CO', { day: 'numeric', month: 'long' })}</span>
+              </div>
+            ))
+          ) : (
+            <div className="event-card">
+              <strong>No hay horarios programados</strong>
+              <small>Agrega un horario para que aparezca aquí.</small>
+            </div>
+          )}
         </aside>
       </main>
 
@@ -244,3 +286,4 @@ const ProfesorDashboard = () => {
 }
 
 export default ProfesorDashboard
+

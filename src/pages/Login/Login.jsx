@@ -2,82 +2,51 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Header, Footer } from '../../components'
-import { validarCampo, getValidationStyles } from '../../helpers'
 import { iniciarSesion } from '../../services'
 import './Login.css'
 import logo from '../../assets/images/logo.png'
 
 const Login = () => {
   const navigate = useNavigate()
-  
-  // HU06: Captura de datos con useState
-  const [formData, setFormData] = useState({
-    correo: '',
-    contrasena: ''
-  })
-  const [validation, setValidation] = useState({
-    correo: null,
-    contrasena: null
-  })
 
-  // HU06: Manejo de cambios en inputs controlados
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    
-    const isValid = validarCampo(value, 'texto')
-    setValidation(prev => ({ ...prev, [name]: isValid }))
-  }
+  const [correo, setCorreo] = useState('')
+  const [contrasena, setContrasena] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    
-    if (formData.correo === 'admin' && formData.contrasena === '1234') {
-      // HU10: Persistencia de sesión - guardar token y datos del usuario
-      iniciarSesion(
-        { nombre: 'Administrador', rol: 'admin', correo: formData.correo },
-        'token-admin-simulado'
-      )
-      
-      // HU09: Retroalimentación visual con SweetAlert2
+  const signIn = () => {
+    if (correo === 'admin@cesde.com' && contrasena === 'Admin1234') {
+      iniciarSesion({ nombre: 'Administrador', rol: 'admin', correo }, 'token-simulado')
       Swal.fire({
         title: 'Bienvenido',
         text: 'Sesión iniciada correctamente',
         icon: 'success',
         timer: 1500,
         showConfirmButton: false
-      }).then(() => {
-        // HU05: Navegación con useNavigate
-        navigate('/admin')
-      })
+      }).then(() => navigate('/admin'))
       return
     }
-    
-    if (formData.correo === 'profesor' && formData.contrasena === '1234') {
-      // HU10: Persistencia de sesión
-      iniciarSesion(
-        { nombre: 'Profesor', rol: 'profesor', correo: formData.correo },
-        'token-profesor-simulado'
-      )
-      
+
+    if (correo === 'profesor@cesde.com' && contrasena === 'Prof1234!') {
+      iniciarSesion({ nombre: 'Profesor', rol: 'profesor', correo }, 'token-simulado')
       Swal.fire({
         title: 'Bienvenido',
         text: 'Sesión iniciada correctamente',
         icon: 'success',
         timer: 1500,
         showConfirmButton: false
-      }).then(() => {
-        navigate('/profesor')
-      })
+      }).then(() => navigate('/profesor'))
       return
     }
-    
-    // HU09: Retroalimentación visual de error con SweetAlert2
+
     Swal.fire({
       title: 'ERROR',
       text: 'Credenciales incorrectas. Verifica tu correo y contraseña.',
       icon: 'error'
     })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    signIn()
   }
 
   return (
@@ -99,9 +68,8 @@ const Login = () => {
                   type="text"
                   name="correo"
                   placeholder="Correo Electrónico"
-                  value={formData.correo}
-                  onChange={handleChange}
-                  style={getValidationStyles(validation.correo)}
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
                 />
               </div>
               
@@ -111,9 +79,8 @@ const Login = () => {
                   type="password"
                   name="contrasena"
                   placeholder="Contraseña"
-                  value={formData.contrasena}
-                  onChange={handleChange}
-                  style={getValidationStyles(validation.contrasena)}
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
                 />
               </div>
               

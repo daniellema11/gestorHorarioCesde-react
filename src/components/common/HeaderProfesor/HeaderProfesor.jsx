@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { cerrarSesion } from '../../../services'
+import { cerrarSesion, getNotificacionesProfesor } from '../../../services'
 import Swal from 'sweetalert2'
 import './HeaderProfesor.css'
 import logo from '../../../assets/images/logo.png'
 
-const HeaderProfesor = ({ title = 'BIENVENIDO PROFESOR', notificationCount = 3 }) => {
+const HeaderProfesor = ({ title = 'BIENVENIDO PROFESOR' }) => {
   const navigate = useNavigate()
   const [menuAbierto, setMenuAbierto] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0)
+
+  useEffect(() => {
+    const notificaciones = getNotificacionesProfesor()
+    setNotificationCount(notificaciones.length)
+  }, [])
 
   // HU10: Función para cerrar sesión limpiando localStorage
   const handleCerrarSesion = () => {

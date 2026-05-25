@@ -20,17 +20,16 @@ const AdminDashboard = () => {
   const [horarios, setHorarios] = useState([])
   const [loading, setLoading] = useState(true)
   
-  const [formData, setFormData] = useState({
-    profesor: '',
-    materia: '',
-    fecha: '',
-    horaInicio: '',
-    horaFin: '',
-    sede: '',
-    aula: '',
-    inicioPeriodo: '',
-    finPeriodo: ''
-  })
+  // Estados individuales para el formulario de horario
+  const [profesor, setProfesor] = useState('')
+  const [materia, setMateria] = useState('')
+  const [fecha, setFecha] = useState('')
+  const [horaInicio, setHoraInicio] = useState('')
+  const [horaFin, setHoraFin] = useState('')
+  const [sede, setSede] = useState('')
+  const [aula, setAula] = useState('')
+  const [inicioPeriodo, setInicioPeriodo] = useState('')
+  const [finPeriodo, setFinPeriodo] = useState('')
 
   const [materiaForm, setMateriaForm] = useState({ nombre: '' })
   const [aulaForm, setAulaForm] = useState({ aula: '', capacidad: '' })
@@ -40,6 +39,129 @@ const AdminDashboard = () => {
     correo: '',
     contrasena: ''
   })
+  const [profesorErrors, setProfesorErrors] = useState({
+    nombre: null,
+    cedula: null,
+    correo: null,
+    contrasena: null
+  })
+
+  const checkProfesorField = (name, value) => {
+    const trimmedValue = value.trim()
+
+    if (name === 'nombre') {
+      return /^[a-zA-Z0-9\s]{3,30}$/.test(trimmedValue)
+    }
+
+    if (name === 'cedula') {
+      return /^\d{6,12}$/.test(trimmedValue)
+    }
+
+    if (name === 'correo') {
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/.test(trimmedValue)
+    }
+
+    if (name === 'contrasena') {
+      return /^[a-zA-Z0-9!@#$%^&*()]{4,16}$/.test(value)
+    }
+
+    return false
+  }
+
+  const getProfesorErrorMessage = (name) => {
+    switch (name) {
+      case 'nombre':
+        return 'Nombre inválido. Usa entre 3 y 30 caracteres.'
+      case 'cedula':
+        return 'Cédula inválida. Solo dígitos, mínimo 6 y máximo 12.'
+      case 'correo':
+        return 'Correo inválido. Usa un email válido.'
+      case 'contrasena':
+        return 'Contraseña inválida. 4-16 caracteres válidos.'
+      default:
+        return ''
+    }
+  }
+
+  const handleProfesorChange = (e) => {
+    const { name, value } = e.target
+    setProfesorForm(prev => ({ ...prev, [name]: value }))
+    setProfesorErrors(prev => ({ ...prev, [name]: checkProfesorField(name, value) }))
+  }
+
+  const checkProfesorForm = () => {
+    const errors = {
+      nombre: checkProfesorField('nombre', profesorForm.nombre),
+      cedula: checkProfesorField('cedula', profesorForm.cedula),
+      correo: checkProfesorField('correo', profesorForm.correo),
+      contrasena: checkProfesorField('contrasena', profesorForm.contrasena)
+    }
+
+    setProfesorErrors(errors)
+    return Object.values(errors).every(Boolean)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    
+    if (!profesor || !materia || !fecha || !horaInicio || !horaFin || !sede || !aula || !inicioPeriodo || !finPeriodo) {
+      Swal.fire('Error', 'Por favor completa todos los campos.', 'error')
+      return
+    }
+
+    if (horaFin <= horaInicio) {
+      Swal.fire('Error', 'La hora fin debe ser mayor que la hora inicio.', 'error')
+      return
+    }
+
+    if (finPeriodo <= inicioPeriodo) {
+      Swal.fire('Error', 'La fecha fin debe ser mayor que la fecha inicio.', 'error')
+      return
+    }
+
+    const horarioDuplicado = horarios.some((h) =>
+      h.profesor === profesor &&
+      h.fecha === fecha &&
+      h.horaInicio === horaInicio &&
+      h.horaFin === horaFin &&
+      h.aula === aula
+    )
+
+    if (horarioDuplicado) {
+      Swal.fire('Error', 'Ya existe un horario igual para este profesor.', 'error')
+      return
+    }
+    
+    const horario = {
+      profesor,
+      materia,
+      fecha,
+      horaInicio,
+      horaFin,
+      sede,
+      aula,
+      inicioPeriodo,
+      finPeriodo,
+      recurrencia: selectedDays
+    }
+    
+    addHorarioAdmin(horario)
+    setHorarios(getHorariosAdmin())
+    
+    Swal.fire('Éxito', 'Horario agregado correctamente', 'success')
+    
+    // Reset form
+    setProfesor('')
+    setMateria('')
+    setFecha('')
+    setHoraInicio('')
+    setHoraFin('')
+    setSede('')
+    setAula('')
+    setInicioPeriodo('')
+    setFinPeriodo('')
+    setSelectedDays([])
+  }
 
   // HU08: Carga automática de datos iniciales con useEffect
   // HU10: Verificar sesión activa al cargar la vista
@@ -86,45 +208,6 @@ const AdminDashboard = () => {
     cargarDatos()
   }, [navigate]) // Dependencia controlada para evitar ciclos infinitos
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    
-    const horario = {
-      ...formData,
-      recurrencia: selectedDays
-    }
-    
-    addHorarioAdmin(horario)
-    
-    // Recargar lista de horarios
-    setHorarios(getHorariosAdmin())
-    
-    Swal.fire({
-      title: 'Éxito',
-      text: 'Horario agregado correctamente',
-      icon: 'success'
-    })
-    
-    // Reset form
-    setFormData({
-      profesor: '',
-      materia: '',
-      fecha: '',
-      horaInicio: '',
-      horaFin: '',
-      sede: '',
-      aula: '',
-      inicioPeriodo: '',
-      finPeriodo: ''
-    })
-    setSelectedDays([])
-  }
-
   const handleMateriaSubmit = (e) => {
     e.preventDefault()
     addMateria(materiaForm)
@@ -147,19 +230,28 @@ const AdminDashboard = () => {
 
   const handleProfesorSubmit = (e) => {
     e.preventDefault()
-    
-    if (!profesorForm.nombre || !profesorForm.cedula || !profesorForm.correo || !profesorForm.contrasena) {
-      Swal.fire('Error', 'Todos los campos son obligatorios', 'error')
+
+    if (!checkProfesorForm()) {
+      Swal.fire('Error', 'Por favor corrige los campos inválidos.', 'error')
       return
     }
-    
+
+    const existeCedula = profesores.some((prof) => prof.cedula === profesorForm.cedula)
+    const existeCorreo = profesores.some((prof) => prof.correo.toLowerCase() === profesorForm.correo.toLowerCase())
+
+    if (existeCedula || existeCorreo) {
+      Swal.fire('Error', 'Ya existe un profesor con esa cédula o correo.', 'error')
+      return
+    }
+
     addPersona({ ...profesorForm, rol: 'profesor' })
     setProfesorForm({ nombre: '', cedula: '', correo: '', contrasena: '' })
+    setProfesorErrors({ nombre: null, cedula: null, correo: null, contrasena: null })
     setShowProfesorModal(false)
-    
+
     // Recargar lista de profesores
     setProfesores(getPersonas())
-    
+
     Swal.fire('Éxito', 'Profesor creado correctamente', 'success')
   }
 
@@ -176,8 +268,8 @@ const AdminDashboard = () => {
             <label>
               Profesor:
               <div className="input-with-icon">
-                <select name="profesor" value={formData.profesor} onChange={handleChange}>
-                  <option value="" disabled>Seleccione un profesor</option>
+                <select value={profesor} onChange={(e) => setProfesor(e.target.value)}>
+                  <option value="">Seleccione un profesor</option>
                   {profesores.map((prof) => (
                     <option key={prof.id} value={prof.nombre}>{prof.nombre}</option>
                   ))}
@@ -191,8 +283,8 @@ const AdminDashboard = () => {
             <label>
               Materia:
               <div className="input-with-icon">
-                <select name="materia" value={formData.materia} onChange={handleChange}>
-                  <option value="" disabled>Seleccione una materia</option>
+                <select value={materia} onChange={(e) => setMateria(e.target.value)}>
+                  <option value="">Seleccione una materia</option>
                   {materias.map((mat) => (
                     <option key={mat.id} value={mat.nombre}>{mat.nombre}</option>
                   ))}
@@ -205,23 +297,23 @@ const AdminDashboard = () => {
 
             <label>
               Fecha:
-              <input type="date" name="fecha" value={formData.fecha} onChange={handleChange} />
+              <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
             </label>
 
             <label>
               Hora Inicio:
-              <input type="time" name="horaInicio" value={formData.horaInicio} onChange={handleChange} />
+              <input type="time" value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} />
             </label>
 
             <label>
               Hora Fin:
-              <input type="time" name="horaFin" value={formData.horaFin} onChange={handleChange} />
+              <input type="time" value={horaFin} onChange={(e) => setHoraFin(e.target.value)} />
             </label>
 
             <label>
               Sede:
-              <select name="sede" value={formData.sede} onChange={handleChange}>
-                <option value="" disabled>Seleccione una sede</option>
+              <select value={sede} onChange={(e) => setSede(e.target.value)}>
+                <option value="">Seleccione una sede</option>
                 <option value="Medellín">Medellín</option>
                 <option value="Bello">Bello</option>
                 <option value="Rionegro">Rionegro</option>
@@ -231,8 +323,8 @@ const AdminDashboard = () => {
             <label>
               Aula:
               <div className="input-with-icon">
-                <select name="aula" value={formData.aula} onChange={handleChange}>
-                  <option value="" disabled>Seleccione un aula</option>
+                <select value={aula} onChange={(e) => setAula(e.target.value)}>
+                  <option value="">Seleccione un aula</option>
                   {aulas.map((a) => (
                     <option key={a.id} value={a.aula}>
                       {a.aula} {a.capacidad ? `(Cap: ${a.capacidad})` : ''}
@@ -247,12 +339,12 @@ const AdminDashboard = () => {
 
             <label>
               Inicio del Periodo:
-              <input type="date" name="inicioPeriodo" value={formData.inicioPeriodo} onChange={handleChange} />
+              <input type="date" value={inicioPeriodo} onChange={(e) => setInicioPeriodo(e.target.value)} />
             </label>
 
             <label>
               Fin del Periodo:
-              <input type="date" name="finPeriodo" value={formData.finPeriodo} onChange={handleChange} />
+              <input type="date" value={finPeriodo} onChange={(e) => setFinPeriodo(e.target.value)} />
             </label>
 
             <label>Recurrencia:</label>
@@ -351,33 +443,54 @@ const AdminDashboard = () => {
             Nombre:
             <input 
               type="text" 
+              name="nombre"
               value={profesorForm.nombre}
-              onChange={(e) => setProfesorForm(prev => ({ ...prev, nombre: e.target.value }))}
+              onChange={handleProfesorChange}
+              required
             />
+            {profesorErrors.nombre === false && (
+              <span className="input-error">{getProfesorErrorMessage('nombre')}</span>
+            )}
           </label>
           <label>
             Cédula:
             <input 
               type="text" 
+              name="cedula"
               value={profesorForm.cedula}
-              onChange={(e) => setProfesorForm(prev => ({ ...prev, cedula: e.target.value }))}
+              onChange={handleProfesorChange}
+              required
+              inputMode="numeric"
             />
+            {profesorErrors.cedula === false && (
+              <span className="input-error">{getProfesorErrorMessage('cedula')}</span>
+            )}
           </label>
           <label>
             Correo:
             <input 
               type="email" 
+              name="correo"
               value={profesorForm.correo}
-              onChange={(e) => setProfesorForm(prev => ({ ...prev, correo: e.target.value }))}
+              onChange={handleProfesorChange}
+              required
             />
+            {profesorErrors.correo === false && (
+              <span className="input-error">{getProfesorErrorMessage('correo')}</span>
+            )}
           </label>
           <label>
             Contraseña:
             <input 
               type="password" 
+              name="contrasena"
               value={profesorForm.contrasena}
-              onChange={(e) => setProfesorForm(prev => ({ ...prev, contrasena: e.target.value }))}
+              onChange={handleProfesorChange}
+              required
             />
+            {profesorErrors.contrasena === false && (
+              <span className="input-error">{getProfesorErrorMessage('contrasena')}</span>
+            )}
           </label>
           <button type="submit">Guardar Cambios</button>
         </form>

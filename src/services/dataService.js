@@ -4,6 +4,7 @@ import { generateId } from '../helpers'
 const PERSONAS_KEY = 'personas'
 const HORARIOS_ADMIN_KEY = 'horariosAdmin'
 const HORARIOS_PROFESOR_KEY = 'horariosProfesor'
+const NOTIFICACIONES_PROFESOR_KEY = 'notificacionesProfesor'
 const MATERIAS_KEY = 'materias'
 const AULAS_KEY = 'aulas'
 
@@ -95,6 +96,24 @@ export const deleteHorarioProfesor = (id) => {
   const horarios = getHorariosProfesor()
   const filtered = horarios.filter(h => h.id !== id)
   guardarLocalStorage(HORARIOS_PROFESOR_KEY, filtered)
+}
+
+export const getNotificacionesProfesor = () => {
+  return consultarLocalStorage(NOTIFICACIONES_PROFESOR_KEY) || []
+}
+
+export const addNotificacionProfesor = (notificacion) => {
+  const notificaciones = getNotificacionesProfesor()
+  const nuevaNotificacion = { ...notificacion, id: generateId() }
+  notificaciones.unshift(nuevaNotificacion)
+  guardarLocalStorage(NOTIFICACIONES_PROFESOR_KEY, notificaciones)
+  return nuevaNotificacion
+}
+
+export const deleteNotificacionProfesor = (id) => {
+  const notificaciones = getNotificacionesProfesor()
+  const filtered = notificaciones.filter(n => n.id !== id)
+  guardarLocalStorage(NOTIFICACIONES_PROFESOR_KEY, filtered)
 }
 
 // ============ MATERIAS ============
