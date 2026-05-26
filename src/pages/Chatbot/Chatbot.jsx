@@ -96,6 +96,10 @@ const Chatbot = () => {
           </div>
         </div>
       </main>
+
+      <div className="chatbot-page__footer">
+        <Link to="/profesor" className="btn-volver">Volver a Calendario</Link>
+      </div>
     </div>
   )
 }

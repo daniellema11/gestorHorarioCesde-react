@@ -7,9 +7,33 @@
   padding: 20px 50px;
 }
 
-.notificaciones-page__title {
+.notificaciones-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.notificaciones-page__title {
   color: var(--text-primary);
+  margin: 0;
+}
+
+.btn-volver {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-volver:hover {
+  background-color: #d61765;
+  transform: translateX(-4px);
 }
 
 .notificaciones-list {
@@ -42,5 +66,16 @@
 @media (max-width: 768px) {
   .notificaciones-page__main {
     padding: 20px;
+  }
+
+  .notificaciones-page__header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .btn-volver {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -1,39 +1,39 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { HeaderProfesor } from '../../components'
+import { getNotificacionesProfesor } from '../../services'
 import './Notificaciones.css'
 
-const notificacionesData = [
-  {
-    id: 1,
-    mensaje: 'Clase hoy: Lógica de programación.',
-    detalle: 'Hora: 10:30 am - Aula: 503'
-  },
-  {
-    id: 2,
-    mensaje: 'Nueva clase asignada.',
-    detalle: 'Programación web - Aula: 501'
-  },
-  {
-    id: 3,
-    mensaje: 'Modificación de horario.',
-    detalle: 'Clase Metodología ahora a las 02:00 pm.'
-  }
-]
-
 const Notificaciones = () => {
+  const [notificaciones, setNotificaciones] = useState([])
+
+  useEffect(() => {
+    setNotificaciones(getNotificacionesProfesor())
+  }, [])
+
   return (
     <div className="notificaciones-page">
-      <HeaderProfesor />
+      <HeaderProfesor notificationCount={notificaciones.length} />
       
       <main className="notificaciones-page__main">
-        <h2 className="notificaciones-page__title">Historial de Notificaciones</h2>
+        <div className="notificaciones-page__header">
+          <h2 className="notificaciones-page__title">Historial de Notificaciones</h2>
+          <Link to="/profesor" className="btn-volver">Volver a Calendario</Link>
+        </div>
         
         <div className="notificaciones-list">
-          {notificacionesData.map((noti) => (
-            <div key={noti.id} className="notificacion-item">
-              <span className="notificacion-mensaje">{noti.mensaje}</span>
-              <span className="notificacion-detalle">{noti.detalle}</span>
+          {notificaciones.length > 0 ? (
+            notificaciones.map((noti) => (
+              <div key={noti.id} className="notificacion-item">
+                <span className="notificacion-mensaje">{noti.titulo || noti.mensaje}</span>
+                <span className="notificacion-detalle">{noti.mensaje || noti.detalle}</span>
+              </div>
+            ))
+          ) : (
+            <div className="notificacion-item">
+              <span className="notificacion-mensaje">No hay notificaciones</span>
             </div>
-          ))}
+          )}
         </div>
       </main>
     </div>
